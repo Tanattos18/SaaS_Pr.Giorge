@@ -1,7 +1,7 @@
 # Estrutura da plataforma
 
 Protótipo navegável em `index.html`. Abra o arquivo no navegador; não precisa instalar nada.
-Nome da escola, cursos, preços e números do painel são exemplos. Nenhum pagamento é real.
+Nome da escola, cursos, preços, formação, depoimentos e números do painel são exemplos. Nenhum pagamento é real.
 
 ## Páginas
 
@@ -29,7 +29,7 @@ Início → Curso → Entrar → Pagamento → Confirmação do banco → Minha 
 ## O que o pastor precisa enviar
 
 - Nome da escola e logo
-- Foto, história e formação
+- Confirmação da foto, da história e da formação
 - Lista real de cursos, com descrição, sumário e preço
 - PDFs das apostilas
 - Depoimentos reais de alunos, com autorização

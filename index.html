@@ -120,10 +120,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* Professor */
 .band { background: var(--sheet); border-block: 1px solid var(--line); }
-.teacher { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(22px, 5vw, 56px); align-items: center; }
+.teacher { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: clamp(22px, 5vw, 56px); align-items: center; }
 .slot { border: 1.5px dashed var(--muted); border-radius: 3px; color: var(--muted); display: grid; place-items: center; text-align: center; padding: 18px; font-size: .96rem; }
-.slot.photo { aspect-ratio: 4 / 5; }
-
+.teacher-photo { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 12px 28px var(--shadow); }
+.demo-tag { justify-self: start; font-size: .92rem; font-weight: 500; color: var(--note-ink); background: var(--note-bg); padding: 2px 10px; border-radius: 3px; width: fit-content; }
+.creds { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 44px); }
+.quotes figure { margin: 0; display: grid; gap: 10px; align-content: start; border-top: 2px solid var(--gold); padding-top: 14px; }
+.quotes blockquote { margin: 0; font: italic 500 1.16rem/1.4 var(--display); }
+.quotes figcaption { color: var(--muted); font-size: .95rem; }
 /* Perguntas */
 .faq { display: grid; max-width: 760px; }
 .faq details { border-bottom: 1px solid var(--line); padding-block: 14px; }
@@ -218,7 +223,7 @@ tr.fresh td { font-weight: 700; }
   .spine span { font-size: .72rem; }
   .course, .pay, .dash, .teacher { grid-template-columns: minmax(0, 1fr); }
   .course-side { position: static; grid-template-columns: 120px minmax(0, 1fr); align-items: start; }
-  .teacher .slot.photo { aspect-ratio: 16 / 7; }
+  .quotes { grid-template-columns: minmax(0, 1fr); }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
@@ -246,8 +251,7 @@ tr.fresh td { font-weight: 700; }
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script>
-const BRAND = 'Casa da Palavra';
-const STUDENT = { name: 'Maria Exemplo', email: 'maria.exemplo@exemplo.com', cpf: '***.456.789-**' };
+const BRAND = 'Casa da Palavra';const STUDENT = { name: 'Maria Exemplo', email: 'maria.exemplo@exemplo.com', cpf: '***.456.789-**' };
 const CATS = ['Todos', 'Bíblia', 'Doutrina', 'Ministério'];
 const COURSES = [
   { id: 'at', short: 'Antigo Testamento', title: 'Panorama do Antigo Testamento', cat: 'Bíblia', pages: 184, price: 97, cloth: 'var(--c1)', h: '100%', mono: 'AT',
@@ -293,7 +297,7 @@ function coverHTML(c) {
 }
 
 function shell() {
-  $('proto').innerHTML = `<div class="wrap"><span>Protótipo para apresentação. Nome, cursos e preços são exemplos, e nenhum pagamento é real.</span>
+  $('proto').innerHTML = `<div class="wrap"><span>Protótipo para apresentação. Nome da escola, cursos, preços, formação e depoimentos são exemplos, e nenhum pagamento é real.</span>
     <span class="proto-links"><a class="linklike" href="#painel" data-go="painel">Ver painel do pastor</a><button class="linklike" data-act="reset">Reiniciar demonstração</button></span></div>`;
   $('top').innerHTML = `<div class="wrap"><a class="brand" href="#inicio" data-go="inicio"><b>${BRAND}</b><small>Escola de Teologia</small></a>
     <nav aria-label="Principal"><a class="nav-opt" href="#cursos" data-go="cursos">Cursos</a><a class="nav-opt" href="#como" data-go="como">Como funciona</a>
@@ -339,11 +343,24 @@ function viewHome() {
     </ol>
   </div></section>
 
-  <section class="section"><div class="wrap teacher">
-    <div class="slot photo">Foto do pastor</div>
-    <div class="stack"><p class="eyebrow">Seu professor</p><h2>Quem ensina importa</h2>
-      <div class="slot">A história, a formação e o ministério do pastor entram aqui, escritos por ele.</div>
-      <div class="slot">Depoimentos reais de alunos entram aqui.</div>
+  <section class="section" id="professor"><div class="wrap teacher">
+    <img class="teacher-photo" src="assets/familia.webp" width="640" height="641" alt="Foto do pastor com a família">
+    <div class="stack"><p class="eyebrow">Seu professor</p><h2>Pr. Giorge</h2>
+      <p class="demo-tag">Texto de demonstração, a confirmar com o pastor</p>
+      <p style="max-width:58ch">Pastor e professor, dedica o ministério a ensinar a Bíblia de forma clara e fiel, para quem está começando e para quem já serve na igreja.</p>
+      <ul class="creds">
+        <li>Bacharel em Teologia <span class="muted">(exemplo)</span></li>
+        <li>Pós-graduação em Ciências Bíblicas <span class="muted">(exemplo)</span></li>
+        <li>Experiência em ensino bíblico e formação de líderes <span class="muted">(exemplo)</span></li>
+      </ul>    </div>
+  </div></section>
+
+  <section class="section band"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">Depoimentos</p><h2>O que os alunos dizem</h2><p class="demo-tag">Depoimentos fictícios, apenas para demonstração</p></div>
+    <div class="quotes">
+      <figure><blockquote>Eu lia a Bíblia há anos, mas a apostila de Hermenêutica mudou a forma como estudo cada texto.</blockquote><figcaption>Aluna de exemplo · Hermenêutica</figcaption></figure>
+      <figure><blockquote>Comprei no Pix e o PDF apareceu na hora. Agora estudo no celular, no intervalo do trabalho.</blockquote><figcaption>Aluno de exemplo · Antigo Testamento</figcaption></figure>
+      <figure><blockquote>Os roteiros de Homilética me ajudaram a preparar as mensagens com mais segurança.</blockquote><figcaption>Líder de exemplo · Homilética</figcaption></figure>
     </div>
   </div></section>
 
@@ -353,8 +370,7 @@ function viewHome() {
       <details open><summary>Quando recebo a apostila?</summary><p>No Pix, logo depois da confirmação. No cartão, assim que a compra é aprovada. O PDF aparece em Minha biblioteca.</p></details>
       <details><summary>Posso ler no celular?</summary><p>Sim. O PDF abre no celular, no tablet e no computador, e também pode ser impresso.</p></details>
       <details><summary>E se eu me arrepender da compra?</summary><p>Você pode pedir o reembolso em até 7 dias depois da compra.</p></details>
-      <details><summary>O curso dá diploma?</summary><p>São cursos livres de formação. Eles não substituem uma graduação reconhecida pelo MEC.</p></details>
-    </div>
+      <details><summary>O curso dá diploma?</summary><p>São cursos livres de formação. Eles não substituem uma graduação reconhecida pelo MEC.</p></details>    </div>
   </div></section>`;
 }
 

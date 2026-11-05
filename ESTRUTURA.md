@@ -38,6 +38,6 @@ Início → Curso → Entrar → Pagamento → Confirmação do banco → Minha 
 
 - Login: usa uma conta de demonstração fixa
 - Pagamento: um botão imita o aviso de confirmação do banco
-- Download: mostra uma prévia da página com a marca d'água
+- Download: gera no navegador um PDF de demonstração, com capa, sumário, texto provisório e marca d'água fictícia
 - Painel: números de exemplo, somados às compras simuladas
 - Compras simuladas ficam guardadas só no navegador de quem testa

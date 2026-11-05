@@ -261,6 +261,7 @@ tr.fresh td { font-weight: 700; }
 <dialog id="pdf" aria-label="Prévia da apostila"></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
 const BRAND = 'Casa da Palavra';const STUDENT = { name: 'Maria Exemplo', email: 'maria.exemplo@exemplo.com', cpf: '***.456.789-**' };
 const CATS = ['Todos', 'Bíblia', 'Doutrina', 'Ministério'];
@@ -574,9 +575,101 @@ function openPdf(c) {
       <p>Repare no nome e no CPF do comprador em marca d'água. O sistema grava esses dados em cada PDF no momento da compra, o que desestimula o compartilhamento do arquivo.</p>
       <div class="pdf-foot"><span>${c.title}</span><span>Licenciado para ${STUDENT.name}</span></div>
     </div>
-    <button class="btn block pdf-download" data-act="fakedownload">Baixar PDF</button>
+    <button class="btn block pdf-download" data-act="download" data-v="${c.id}">Baixar PDF</button>
   </div>`;
   $('pdf').showModal();
+}
+
+async function buildPdf(c) {
+  const { PDFDocument, StandardFonts, PageSizes, rgb, degrees } = PDFLib;
+  const doc = await PDFDocument.create();
+  doc.setTitle(`${c.title} (demonstração)`);
+  doc.setAuthor(BRAND);
+  const [regular, bold, italic] = await Promise.all([StandardFonts.TimesRoman, StandardFonts.TimesRomanBold, StandardFonts.TimesRomanItalic].map(f => doc.embedFont(f)));
+  const [W, H] = PageSizes.A4;
+  const token = name => {
+    const hex = getComputedStyle(document.documentElement).getPropertyValue(name).trim().slice(1);
+    return rgb(...[0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
+  };
+  const gold = token('--gold'), cloth = token(c.cloth.slice(4, -1));
+  const ink = rgb(.11, .16, .14), muted = rgb(.34, .4, .37), rubric = rgb(.64, .16, .16);
+  const wrap = (text, font, size, width) => text.split(' ').reduce((lines, word) => {
+    const next = lines[lines.length - 1] + (lines[lines.length - 1] ? ' ' : '') + word;
+    if (font.widthOfTextAtSize(next, size) <= width) lines[lines.length - 1] = next; else lines.push(word);
+    return lines;
+  }, ['']);
+
+  const cover = doc.addPage([W, H]);
+  const centered = (text, y, font, size, color = gold) =>
+    cover.drawText(text, { x: (W - font.widthOfTextAtSize(text, size)) / 2 + 12, y, font, size, color });
+  cover.drawRectangle({ x: 0, y: 0, width: W, height: H, color: cloth });
+  cover.drawRectangle({ x: 0, y: 0, width: 24, height: H, color: rgb(0, 0, 0), opacity: .28 });
+  cover.drawRectangle({ x: 44, y: 28, width: W - 72, height: H - 56, borderColor: gold, borderWidth: 1.2 });
+  cover.drawRectangle({ x: 51, y: 35, width: W - 86, height: H - 70, borderColor: gold, borderWidth: .5 });
+  centered(BRAND.toUpperCase(), H - 110, bold, 17);
+  centered(c.cat.toUpperCase(), H / 2 + 112, regular, 13);
+  const titleLines = wrap(c.title, bold, 32, W - 170);
+  let y = H / 2 + 58;
+  titleLines.forEach(line => { centered(line, y, bold, 32); y -= 40; });
+  cover.drawLine({ start: { x: W / 2 - 28, y: y + 8 }, end: { x: W / 2 + 52, y: y + 8 }, thickness: 1.5, color: gold });
+  centered(`Apostila · ${c.pages} páginas`, y - 24, italic, 15);
+  centered('Amostra de demonstração', y - 46, italic, 13);
+  centered(`Exemplar de ${STUDENT.name}`, 72, regular, 12);
+
+  const mark = `${STUDENT.name} · CPF ${STUDENT.cpf}`;
+  const innerPage = () => {
+    const page = doc.addPage([W, H]);
+    for (let py = -120; py < H; py += 110) for (let px = -60; px < W; px += 280) {
+      page.drawText(mark, { x: px, y: py, font: bold, size: 15, color: rubric, opacity: .2, rotate: degrees(28) });
+    }
+    page.drawLine({ start: { x: 64, y: 62 }, end: { x: W - 64, y: 62 }, thickness: .5, color: muted });
+    page.drawText(`Licenciado para ${STUDENT.name} · Documento de demonstração`, { x: 64, y: 46, font: regular, size: 10, color: muted });
+    return page;
+  };
+
+  const toc = innerPage();
+  toc.drawText('SUMÁRIO', { x: 64, y: H - 96, font: bold, size: 18, color: rubric });
+  c.toc.forEach((t, i) => {
+    const rowY = H - 146 - i * 32, label = `Cap. ${i + 1}`, pg = String(t[1]);
+    toc.drawText(label, { x: 64, y: rowY, font: regular, size: 13, color: rubric });
+    toc.drawText(t[0], { x: 116, y: rowY, font: regular, size: 13, color: ink });
+    const textEnd = 116 + regular.widthOfTextAtSize(t[0], 13) + 8, pgX = W - 64 - regular.widthOfTextAtSize(pg, 13);
+    toc.drawLine({ start: { x: textEnd, y: rowY + 2 }, end: { x: pgX - 8, y: rowY + 2 }, thickness: .7, color: muted, dashArray: [1, 3] });
+    toc.drawText(pg, { x: pgX, y: rowY, font: regular, size: 13, color: muted });
+  });
+
+  const ch = innerPage();
+  ch.drawText('CAPÍTULO 1', { x: 64, y: H - 96, font: bold, size: 13, color: rubric });
+  y = H - 132;
+  wrap(c.toc[0][0], bold, 26, W - 128).forEach(line => { ch.drawText(line, { x: 64, y, font: bold, size: 26, color: ink }); y -= 32; });
+  y -= 10;
+  [
+    'Este PDF foi gerado para demonstrar como o aluno recebe o material. O texto deste capítulo é provisório.',
+    'Na versão final, o conteúdo virá das apostilas do pastor. O sistema acrescenta a capa e a marca d\'água no momento da compra, com os dados de quem comprou.',
+    'O nome e o CPF que aparecem neste arquivo são fictícios.'
+  ].forEach(paragraph => {
+    wrap(paragraph, regular, 13.5, W - 128).forEach(line => { ch.drawText(line, { x: 64, y, font: regular, size: 13.5, color: ink }); y -= 21; });
+    y -= 12;
+  });
+  return doc.save();
+}
+
+async function downloadPdf(c, btn) {
+  btn.disabled = true; btn.textContent = 'Gerando o PDF…';
+  try {
+    const bytes = await buildPdf(c);
+    const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Apostila-${c.short.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-')}-demonstracao.pdf`;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    $('pdf').close();
+    toast('PDF de demonstração baixado.');
+  } catch (err) {
+    btn.disabled = false; btn.textContent = 'Baixar PDF';
+    toast('Não foi possível gerar o PDF. Verifique a internet e tente de novo.');
+  }
 }
 
 document.addEventListener('click', e => {
@@ -611,7 +704,7 @@ document.addEventListener('click', e => {
   }
   if (act === 'open') openPdf(byId(v));
   if (act === 'close') $('pdf').close();
-  if (act === 'fakedownload') { $('pdf').close(); toast('Na versão final, este botão baixa o PDF com a marca d\'água do comprador.'); }
+  if (act === 'download') downloadPdf(byId(v), el);
   if (act === 'newcourse') toast('Na versão final, aqui o pastor envia o PDF, define título e preço e publica o curso.');
 });
 

@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Casa da Palavra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya:ital,wght@0,500;0,700;1,500&display=swap">
+<style>
+/* Conceito: uma biblioteca encadernada. Lombadas na estante, capas de tecido com título dourado, abas de índice de Bíblia e sumários com pontilhado. */
+:root {
+  --paper: #F4F6F2; --sheet: #FFFFFF; --ink: #1B2A24; --muted: #56665F; --line: #D6DCD5;
+  --leather: #14352C; --leather-deep: #0D261F; --gold: #D9B568; --on-leather: #F2EEE1; --on-leather-soft: #BFCAC0;
+  --action: #14352C; --on-action: #F8F6EE; --rubric: #A32A2A; --ok: #1B7347; --ok-bg: #E2F2E9;
+  --note-bg: #F3E9CF; --note-ink: #4A3A12; --tab: #E4E8E1; --qr-bg: #FFFFFF; --qr-ink: #14211C; --shadow: rgba(13, 38, 31, .22);
+  --c1: #1F4D3F; --c2: #6B1F2A; --c3: #1E3557; --c4: #4B2A55; --c5: #6A4A1E; --c6: #36474F;
+  --display: "Alegreya", Georgia, "Times New Roman", serif;
+  --caps: "Alegreya SC", Georgia, serif;
+  --body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px)); --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0F1714; --sheet: #17221E; --ink: #E8ECE6; --muted: #A1AEA7; --line: #2C3A34;
+  --leather: #12302A; --leather-deep: #0A1F19; --action: #D9B568; --on-action: #14201B; --rubric: #EFA096; --ok: #7BD3A4; --ok-bg: #16332A;
+  --note-bg: #2B2513; --note-ink: #EBDCB0; --tab: #202D28; --shadow: rgba(0, 0, 0, .5); color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #0F1714; --sheet: #17221E; --ink: #E8ECE6; --muted: #A1AEA7; --line: #2C3A34;
+  --leather: #12302A; --leather-deep: #0A1F19; --action: #D9B568; --on-action: #14201B; --rubric: #EFA096; --ok: #7BD3A4; --ok-bg: #16332A;
+  --note-bg: #2B2513; --note-ink: #EBDCB0; --tab: #202D28; --shadow: rgba(0, 0, 0, .5); color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.55 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--leather-deep); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.12; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { width: 100%; max-width: 1120px; margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.eyebrow { font: 500 .95rem/1.2 var(--caps); letter-spacing: .06em; color: var(--rubric); }
+.muted { color: var(--muted); }
+.stack { display: grid; gap: 14px; }
+
+/* Faixa do protótipo */
+.proto { background: var(--note-bg); color: var(--note-ink); font-size: .92rem; }
+.proto .wrap { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; justify-content: space-between; padding-block: 7px; }
+.proto-links { display: flex; gap: 16px; flex-wrap: wrap; }
+.linklike { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 2px; font-weight: 500; }
+
+/* Cabeçalho */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--leather-deep); color: var(--on-leather); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 62px; }
+.brand { display: grid; text-decoration: none; line-height: 1.1; }
+.brand b { font: 700 1.3rem/1.1 var(--caps); letter-spacing: .03em; color: var(--gold); }
+.brand small { font-size: .8rem; color: var(--on-leather-soft); }
+.top nav { display: flex; align-items: center; gap: clamp(10px, 3vw, 24px); }
+.top nav a { text-decoration: none; font-weight: 500; }
+.top nav a:hover { color: var(--gold); }
+.nav-opt { display: inline; }
+.pill-link { border: 1px solid var(--gold); border-radius: 3px; padding: 6px 12px; color: var(--gold); white-space: nowrap; }
+
+/* Botões */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 3px; padding: 13px 22px; background: var(--action); color: var(--on-action); font-weight: 700; text-decoration: none; transition: filter .15s; }
+.btn:hover { filter: brightness(1.15); }
+.btn.gold { background: var(--gold); color: #1B241F; }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.block { width: 100%; }
+.btn[disabled] { opacity: .65; cursor: progress; }
+
+/* Abertura com a estante */
+.hero { background: radial-gradient(90% 120% at 85% 0%, var(--leather) 0%, var(--leather-deep) 75%); color: var(--on-leather); overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: end; padding-top: clamp(36px, 7vw, 76px); }
+.hero-text { display: grid; gap: 20px; padding-bottom: clamp(32px, 6vw, 72px); justify-items: start; min-width: 0; }
+.hero h1 { font-size: clamp(2.5rem, 6vw, 4.2rem); line-height: 1.02; }
+.hero h1 em { color: var(--gold); font-style: italic; font-weight: 500; }
+.hero-lead { max-width: 46ch; font-size: 1.16rem; color: var(--on-leather-soft); }
+.verse { font: italic 500 1.05rem/1.35 var(--display); color: var(--on-leather); border-left: 2px solid var(--gold); padding-left: 12px; }
+.verse span { display: block; font: 500 .85rem var(--caps); letter-spacing: .05em; color: var(--gold); margin-top: 2px; }
+.shelf { display: flex; align-items: flex-end; gap: 3px; height: 400px; border-bottom: 12px solid #2B1C10; min-width: 0; }
+.spine { position: relative; flex: 1 1 0; min-width: 0; height: var(--h); background: linear-gradient(90deg, rgba(0,0,0,.34), rgba(255,255,255,.1) 28%, rgba(255,255,255,.03) 62%, rgba(0,0,0,.3)), var(--cloth); border: 0; border-radius: 3px 3px 0 0; color: var(--gold); padding: 34px 0; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform .25s ease; }
+.spine::before, .spine::after { content: ""; position: absolute; left: 0; right: 0; height: 7px; border-block: 1px solid var(--gold); }
+.spine::before { top: 16px; } .spine::after { bottom: 16px; }
+.spine span { writing-mode: vertical-rl; transform: rotate(180deg); font: 500 clamp(.82rem, 1.5vw, 1.05rem)/1.1 var(--caps); letter-spacing: .05em; max-height: 100%; overflow: hidden; white-space: nowrap; }
+.spine:hover, .spine:focus-visible { transform: translateY(-16px); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .spine, .btn { transition: none; } .spine:hover, .spine:focus-visible { transform: none; } }
+
+/* Seções */
+.section { padding-block: clamp(44px, 7vw, 84px); scroll-margin-top: 40px; }
+.section-head { display: grid; gap: 6px; margin-bottom: 26px; max-width: 62ch; }
+
+/* Catálogo com abas de índice */
+.index { display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: start; }
+.index-page { background: var(--sheet); border: 1px solid var(--line); border-right-width: 3px; padding: clamp(16px, 3vw, 32px); min-width: 0; min-height: 560px; }
+.tabs { display: flex; flex-direction: column; gap: 4px; padding-top: 22px; }
+.tab { writing-mode: vertical-rl; background: var(--tab); border: 1px solid var(--line); border-left: 0; border-radius: 0 7px 7px 0; padding: 14px 8px; font: 500 1rem/1 var(--caps); letter-spacing: .05em; color: var(--muted); }
+.tab:hover { color: var(--ink); }
+.tab[aria-pressed="true"] { background: var(--leather); color: var(--gold); border-color: var(--leather); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 34px); }
+.card { display: grid; gap: 10px; align-content: start; text-decoration: none; min-width: 0; }
+.cover { position: relative; aspect-ratio: 3 / 4; max-width: 100%; background: linear-gradient(90deg, rgba(0,0,0,.32) 0, rgba(0,0,0,.05) 5%, rgba(255,255,255,.07) 7%, rgba(0,0,0,0) 14%), var(--cloth); color: var(--gold); border-radius: 2px 5px 5px 2px; box-shadow: 0 10px 22px var(--shadow); transition: transform .2s ease; display: grid; grid-template-rows: auto 1fr auto; text-align: center; padding: clamp(14px, 3vw, 24px) clamp(14px, 2.4vw, 22px) clamp(14px, 3vw, 24px) clamp(18px, 3vw, 28px); container-type: inline-size; }
+.cover::after { content: ""; position: absolute; inset: 8px 8px 8px 14px; border: 1px solid currentColor; opacity: .75; pointer-events: none; }
+.cover small { font: 500 clamp(.68rem, 6.4cqw, .92rem)/1.1 var(--caps); letter-spacing: .08em; }
+.cover strong { align-self: center; font: 700 clamp(.98rem, 11cqw, 1.7rem)/1.14 var(--display); overflow-wrap: anywhere; hyphens: auto; }
+.cover i { font: italic 500 clamp(.68rem, 6cqw, .9rem)/1.1 var(--display); }
+.card:hover .cover { transform: translateY(-4px); }
+.card-meta { display: flex; flex-wrap: wrap; gap: 2px 12px; justify-content: space-between; align-items: baseline; }
+.card-title { font: 700 1.05rem/1.2 var(--display); }
+.price { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Como funciona */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 44px); margin: 0; padding: 0; list-style: none; counter-reset: passo; }
+.steps li { counter-increment: passo; display: grid; gap: 8px; align-content: start; border-top: 2px solid var(--ink); padding-top: 12px; }
+.steps li::before { content: "Passo " counter(passo); font: 500 .95rem var(--caps); letter-spacing: .05em; color: var(--rubric); }
+
+/* Professor */
+.band { background: var(--sheet); border-block: 1px solid var(--line); }
+.teacher { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(22px, 5vw, 56px); align-items: center; }
+.slot { border: 1.5px dashed var(--muted); border-radius: 3px; color: var(--muted); display: grid; place-items: center; text-align: center; padding: 18px; font-size: .96rem; }
+.slot.photo { aspect-ratio: 4 / 5; }
+
+/* Perguntas */
+.faq { display: grid; max-width: 760px; }
+.faq details { border-bottom: 1px solid var(--line); padding-block: 14px; }
+.faq summary { cursor: pointer; font: 700 1.12rem/1.3 var(--display); }
+.faq p { margin-top: 8px; color: var(--muted); max-width: 65ch; }
+
+.foot { background: var(--leather-deep); color: var(--on-leather-soft); padding-block: 30px; font-size: .95rem; }
+.foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 28px; justify-content: space-between; }
+
+/* Página do curso */
+.crumb { font-size: .95rem; margin-bottom: 20px; display: inline-block; }
+.course { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(24px, 5vw, 60px); align-items: start; }
+.course-side { display: grid; gap: 18px; position: sticky; top: 84px; }
+.course h1 { font-size: clamp(2rem, 4.6vw, 3rem); }
+.buy { background: var(--sheet); border: 1px solid var(--line); border-radius: 3px; padding: 18px; display: grid; gap: 10px; }
+.buy .amount { font: 700 2rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding-block: 12px; border-block: 1px solid var(--line); }
+.facts div { min-width: 0; }
+.facts dt { font: 500 .85rem var(--caps); letter-spacing: .05em; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 700; }
+.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.toc li { display: flex; align-items: baseline; gap: 8px; }
+.toc .cap { color: var(--rubric); font: 500 .95rem var(--caps); flex: none; min-width: 2.4em; }
+.toc .dots { flex: 1; border-bottom: 1.5px dotted var(--muted); min-width: 16px; transform: translateY(-4px); }
+.toc .pg { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+/* Entrar e pagar */
+.narrow { max-width: 460px; margin-inline: auto; }
+.panel { background: var(--sheet); border: 1px solid var(--line); border-radius: 3px; padding: clamp(18px, 3.5vw, 30px); display: grid; gap: 16px; }
+.field { display: grid; gap: 4px; }
+.field label { font-weight: 500; font-size: .95rem; }
+.field input { font: inherit; padding: 11px 12px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper); color: var(--muted); width: 100%; }
+.progress { display: flex; flex-wrap: wrap; gap: 6px 10px; list-style: none; margin: 0 0 22px; padding: 0; font-size: .96rem; color: var(--muted); }
+.progress li + li::before { content: "›"; margin-right: 10px; }
+.progress .now { color: var(--ink); font-weight: 700; }
+.progress .done { color: var(--ok); }
+.pay { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: clamp(18px, 3vw, 28px); align-items: start; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: transparent; padding: 10px; font-weight: 500; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--action); color: var(--on-action); font-weight: 700; }
+.pix { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; align-items: center; }
+.qr { background: var(--qr-bg); color: var(--qr-ink); padding: 10px; border: 1px solid var(--line); border-radius: 3px; width: 170px; }
+.qr svg { display: block; width: 100%; height: auto; }
+.status { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; font-size: .95rem; padding: 3px 10px; border-radius: 99px; background: var(--note-bg); color: var(--note-ink); justify-self: start; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.status.paid { background: var(--ok-bg); color: var(--ok); }
+.line { display: flex; justify-content: space-between; gap: 12px; }
+.line.total { border-top: 1px solid var(--line); padding-top: 10px; font-weight: 700; font-size: 1.15rem; }
+
+/* Biblioteca */
+.lib { display: grid; gap: 14px; }
+.lib-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--sheet); border: 1px solid var(--line); border-radius: 3px; padding: 12px 16px 12px 12px; }
+.lib-row.fresh { box-shadow: 0 0 0 2px var(--ok); }
+.mini { height: 86px; background: var(--cloth); border-radius: 1px 3px 3px 1px; color: var(--gold); display: grid; place-items: center; font: 700 1.3rem var(--caps); }
+.empty { text-align: center; }
+
+/* Prévia do PDF */
+dialog { border: 0; padding: 0; background: var(--paper); color: var(--ink); width: min(620px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); border-radius: 4px; }
+dialog::backdrop { background: rgba(5, 15, 12, .7); }
+.dlg { display: grid; gap: 14px; padding: 16px; }
+.dlg-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.pdf { position: relative; overflow: hidden; background: var(--sheet); border: 1px solid var(--line); padding: 28px clamp(18px, 5vw, 40px); display: grid; gap: 12px; }
+.pdf h3 { font-size: 1.5rem; }
+.pdf p { position: relative; }
+.marks { position: absolute; inset: -40% -40%; display: grid; gap: 62px; align-content: center; transform: rotate(-28deg); pointer-events: none; color: var(--rubric); opacity: .2; font-weight: 700; white-space: nowrap; font-size: 1.05rem; text-align: center; }
+.pdf-foot { border-top: 1px solid var(--line); padding-top: 8px; font-size: .86rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; }
+
+/* Painel */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.stat { background: var(--sheet); border: 1px solid var(--line); border-radius: 3px; padding: 14px 16px; min-width: 0; }
+.stat b { display: block; font: 700 clamp(1.4rem, 3vw, 1.95rem)/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.dash { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 18px; align-items: start; margin-top: 18px; }
+.table-box { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .98rem; min-width: 440px; }
+th { text-align: left; font: 500 .88rem var(--caps); letter-spacing: .05em; color: var(--muted); }
+th, td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+.tag { font-size: .84rem; font-weight: 500; padding: 1px 8px; border-radius: 99px; background: var(--ok-bg); color: var(--ok); white-space: nowrap; }
+tr.fresh td { font-weight: 700; }
+.panel-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.rank { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.rank li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; width: min(460px, calc(100vw - 32px)); background: var(--ink); color: var(--paper); padding: 11px 16px; border-radius: 3px; font-weight: 500; }
+
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .hero-text { padding-bottom: 20px; }
+  .shelf { height: 300px; }
+  .spine { padding: 20px 0; }
+  .spine::before { top: 8px; } .spine::after { bottom: 8px; }
+  .spine span { font-size: .72rem; }
+  .course, .pay, .dash, .teacher { grid-template-columns: minmax(0, 1fr); }
+  .course-side { position: static; grid-template-columns: 120px minmax(0, 1fr); align-items: start; }
+  .teacher .slot.photo { aspect-ratio: 16 / 7; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .nav-opt { display: none; }
+  .index { grid-template-columns: minmax(0, 1fr); }
+  .tabs { flex-direction: row; padding-top: 0; order: -1; }
+  .tab { writing-mode: horizontal-tb; flex: 1; border: 1px solid var(--line); border-bottom: 0; border-radius: 7px 7px 0 0; padding: 10px 2px; font-size: .86rem; letter-spacing: 0; min-width: 0; }
+  .index-page { border-right-width: 1px; min-height: 0; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .pix { grid-template-columns: minmax(0, 1fr); justify-items: start; }
+  .lib-row { grid-template-columns: 52px minmax(0, 1fr); }
+  .lib-row .btn { grid-column: 1 / -1; }
+  .mini { height: 70px; }
+  .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div id="proto" class="proto"></div>
+<header id="top" class="top"></header>
+<main id="app"></main>
+<footer id="foot" class="foot"></footer>
+<dialog id="pdf" aria-label="Prévia da apostila"></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+const BRAND = 'Casa da Palavra';
+const STUDENT = { name: 'Maria Exemplo', email: 'maria.exemplo@exemplo.com', cpf: '***.456.789-**' };
+const CATS = ['Todos', 'Bíblia', 'Doutrina', 'Ministério'];
+const COURSES = [
+  { id: 'at', short: 'Antigo Testamento', title: 'Panorama do Antigo Testamento', cat: 'Bíblia', pages: 184, price: 97, cloth: 'var(--c1)', h: '100%', mono: 'AT',
+    about: 'Da Criação aos profetas: o fio da história de Israel, livro por livro, com contexto, temas centrais e mapas de leitura.',
+    toc: [['A Lei e as origens', 7], ['Os livros históricos', 48], ['Poesia e sabedoria', 92], ['Os profetas maiores', 124], ['Os profetas menores', 158]] },
+  { id: 'nt', short: 'Novo Testamento', title: 'Panorama do Novo Testamento', cat: 'Bíblia', pages: 162, price: 97, cloth: 'var(--c2)', h: '91%', mono: 'NT',
+    about: 'Os evangelhos, a igreja primitiva e as cartas apostólicas, apresentados no contexto em que foram escritos.',
+    toc: [['O mundo do primeiro século', 7], ['Os quatro evangelhos', 26], ['Atos e a expansão da igreja', 72], ['As cartas de Paulo', 98], ['Cartas gerais e Apocalipse', 136]] },
+  { id: 'herm', short: 'Hermenêutica', title: 'Hermenêutica: como interpretar a Bíblia', cat: 'Bíblia', pages: 128, price: 127, cloth: 'var(--c3)', h: '82%', mono: 'He',
+    about: 'Princípios e método para ler o texto com fidelidade: contexto, gênero literário, linguagem e aplicação.',
+    toc: [['Por que interpretar', 7], ['Contexto histórico e literário', 22], ['Os gêneros bíblicos', 51], ['Erros comuns de leitura', 84], ['Do texto à vida', 108]] },
+  { id: 'sist', short: 'Teologia Sistemática', title: 'Teologia Sistemática I: Deus, Cristo e salvação', cat: 'Doutrina', pages: 240, price: 147, cloth: 'var(--c4)', h: '96%', mono: 'TS',
+    about: 'As grandes doutrinas da fé cristã organizadas por tema, com as passagens bíblicas que as fundamentam.',
+    toc: [['A revelação e as Escrituras', 7], ['A doutrina de Deus', 44], ['A pessoa e a obra de Cristo', 96], ['A salvação', 152], ['Questões para estudo', 214]] },
+  { id: 'esp', short: 'Espírito Santo', title: 'A doutrina do Espírito Santo', cat: 'Doutrina', pages: 96, price: 67, cloth: 'var(--c5)', h: '76%', mono: 'ES',
+    about: 'Quem é o Espírito Santo, como age nas Escrituras e o que a Bíblia ensina sobre dons e fruto.',
+    toc: [['A pessoa do Espírito', 7], ['O Espírito no Antigo Testamento', 21], ['O Espírito em Atos', 40], ['Dons e fruto', 62], ['A vida no Espírito', 84]] },
+  { id: 'hom', short: 'Homilética', title: 'Homilética: preparação de sermões', cat: 'Ministério', pages: 112, price: 87, cloth: 'var(--c6)', h: '87%', mono: 'Ho',
+    about: 'Do estudo do texto à pregação: estrutura, ilustrações, aplicação e entrega da mensagem, com roteiros práticos.',
+    toc: [['O chamado para pregar', 7], ['Estudo do texto', 20], ['A estrutura do sermão', 44], ['Ilustração e aplicação', 72], ['A entrega da mensagem', 92]] }
+];
+const EXAMPLE_SALES = [
+  { who: 'Ana P.', course: 'Teologia Sistemática', when: 'Hoje, 09:42', value: 147 },
+  { who: 'João M.', course: 'Hermenêutica', when: 'Hoje, 08:15', value: 127 },
+  { who: 'Carla S.', course: 'Antigo Testamento', when: 'Ontem, 21:03', value: 97 },
+  { who: 'Pedro L.', course: 'Homilética', when: 'Ontem, 18:27', value: 87 },
+  { who: 'Marcos T.', course: 'Novo Testamento', when: 'Ontem, 11:50', value: 97 }
+];
+const EXAMPLE_TOTALS = { sales: 38, revenue: 4346, students: 31, downloads: 52 };
+const EXAMPLE_RANK = { sist: 11, at: 9, herm: 7, nt: 5, hom: 4, esp: 2 };
+
+const blank = () => ({ user: false, owned: [], sales: [], pendingCourse: null });
+let state = blank(), filter = 'Todos', payMethod = 'pix', fresh = null, paying = false;
+try { state = Object.assign(blank(), JSON.parse(localStorage.getItem('demo-state') || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem('demo-state', JSON.stringify(state)); } catch (e) {} };
+
+const brl = n => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 0 });
+const byId = id => COURSES.find(c => c.id === id);
+const $ = id => document.getElementById(id);
+
+function coverHTML(c) {
+  return `<div class="cover" style="--cloth:${c.cloth}"><small>${c.cat}</small><strong>${c.short}</strong><i>${BRAND}</i></div>`;
+}
+
+function shell() {
+  $('proto').innerHTML = `<div class="wrap"><span>Protótipo para apresentação. Nome, cursos e preços são exemplos, e nenhum pagamento é real.</span>
+    <span class="proto-links"><a class="linklike" href="#painel" data-go="painel">Ver painel do pastor</a><button class="linklike" data-act="reset">Reiniciar demonstração</button></span></div>`;
+  $('top').innerHTML = `<div class="wrap"><a class="brand" href="#inicio" data-go="inicio"><b>${BRAND}</b><small>Escola de Teologia</small></a>
+    <nav aria-label="Principal"><a class="nav-opt" href="#cursos" data-go="cursos">Cursos</a><a class="nav-opt" href="#como" data-go="como">Como funciona</a>
+    ${state.user ? `<a class="pill-link" href="#biblioteca" data-go="biblioteca">Minha biblioteca</a>` : `<a class="pill-link" href="#entrar" data-go="entrar">Entrar</a>`}</nav></div>`;
+  $('foot').innerHTML = `<div class="wrap"><span>${BRAND} · Escola de Teologia</span><span>Cursos livres em PDF · Termos · Privacidade · Reembolso</span></div>`;
+}
+
+function viewHome() {
+  const list = COURSES.filter(c => filter === 'Todos' || c.cat === filter);
+  return `
+  <section class="hero"><div class="wrap">
+    <div class="hero-text">
+      <h1>Estude a Palavra <em>a fundo</em>, no seu ritmo.</h1>
+      <p class="hero-lead">Apostilas de teologia escritas para quem quer entender as Escrituras. Compre, baixe o PDF e estude onde estiver.</p>
+      <a class="btn gold" href="#cursos" data-go="cursos">Ver os cursos</a>
+      <p class="verse">“…que maneja bem a palavra da verdade.”<span>2 Tm 2.15</span></p>
+    </div>
+    <div class="shelf" aria-label="Estante de cursos">
+      ${COURSES.map(c => `<a class="spine" style="--cloth:${c.cloth};--h:${c.h}" href="#c-${c.id}" data-go="c-${c.id}" aria-label="${c.title}"><span>${c.short}</span></a>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="section" id="cursos"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">Catálogo</p><h2>Escolha por onde começar</h2></div>
+    <div class="index">
+      <div class="index-page"><div class="grid">
+        ${list.map(c => `<a class="card" href="#c-${c.id}" data-go="c-${c.id}">${coverHTML(c)}
+          <span class="card-title">${c.title}</span>
+          <span class="card-meta"><span class="muted">${c.pages} páginas · PDF</span><span class="price">${brl(c.price)}</span></span></a>`).join('')}
+      </div></div>
+      <div class="tabs" aria-label="Filtrar por área">
+        ${CATS.map(k => `<button class="tab" data-act="filter" data-v="${k}" aria-pressed="${k === filter}">${k}</button>`).join('')}
+      </div>
+    </div>
+  </div></section>
+
+  <section class="section band" id="como"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">Como funciona</p><h2>Do pagamento ao PDF em poucos minutos</h2></div>
+    <ol class="steps">
+      <li><h3>Escolha e crie sua conta</h3><p class="muted">Veja o sumário de cada apostila antes de comprar. A conta guarda tudo o que você adquiriu.</p></li>
+      <li><h3>Pague com Pix ou cartão</h3><p class="muted">O sistema recebe a confirmação do pagamento automaticamente, sem você precisar enviar comprovante.</p></li>
+      <li><h3>Baixe na sua biblioteca</h3><p class="muted">O PDF é liberado na hora e fica disponível na sua conta sempre que precisar.</p></li>
+    </ol>
+  </div></section>
+
+  <section class="section"><div class="wrap teacher">
+    <div class="slot photo">Foto do pastor</div>
+    <div class="stack"><p class="eyebrow">Seu professor</p><h2>Quem ensina importa</h2>
+      <div class="slot">A história, a formação e o ministério do pastor entram aqui, escritos por ele.</div>
+      <div class="slot">Depoimentos reais de alunos entram aqui.</div>
+    </div>
+  </div></section>
+
+  <section class="section band"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">Dúvidas</p><h2>Perguntas frequentes</h2></div>
+    <div class="faq">
+      <details open><summary>Quando recebo a apostila?</summary><p>No Pix, logo depois da confirmação. No cartão, assim que a compra é aprovada. O PDF aparece em Minha biblioteca.</p></details>
+      <details><summary>Posso ler no celular?</summary><p>Sim. O PDF abre no celular, no tablet e no computador, e também pode ser impresso.</p></details>
+      <details><summary>E se eu me arrepender da compra?</summary><p>Você pode pedir o reembolso em até 7 dias depois da compra.</p></details>
+      <details><summary>O curso dá diploma?</summary><p>São cursos livres de formação. Eles não substituem uma graduação reconhecida pelo MEC.</p></details>
+    </div>
+  </div></section>`;
+}
+
+function viewCourse(c) {
+  const owned = state.owned.includes(c.id);
+  return `<section class="section"><div class="wrap">
+    <a class="crumb muted" href="#cursos" data-go="cursos">‹ Todos os cursos</a>
+    <div class="course">
+      <div class="course-side">${coverHTML(c)}
+        <div class="buy">
+          <span class="amount">${brl(c.price)}</span>
+          <span class="muted">Pagamento único, no Pix ou no cartão</span>
+          ${owned ? `<a class="btn block" href="#biblioteca" data-go="biblioteca">Abrir na biblioteca</a>`
+                  : `<a class="btn block" href="#pagar-${c.id}" data-go="pagar-${c.id}">Comprar agora</a>`}
+        </div>
+      </div>
+      <div class="stack">
+        <p class="eyebrow">${c.cat}</p>
+        <h1>${c.title}</h1>
+        <p style="max-width:62ch;font-size:1.14rem">${c.about}</p>
+        <dl class="facts"><div><dt>Formato</dt><dd>PDF</dd></div><div><dt>Tamanho</dt><dd>${c.pages} páginas</dd></div><div><dt>Liberação</dt><dd>Imediata</dd></div></dl>
+        <h2 style="margin-top:12px">Sumário</h2>
+        <ol class="toc">${c.toc.map((t, i) => `<li><span class="cap">Cap. ${i + 1}</span><span>${t[0]}</span><span class="dots"></span><span class="pg">${t[1]}</span></li>`).join('')}</ol>
+      </div>
+    </div>
+  </div></section>`;
+}
+
+function viewLogin() {
+  const c = byId(state.pendingCourse);
+  return `<section class="section"><div class="wrap"><div class="narrow panel">
+    <div class="stack" style="gap:4px"><h1 style="font-size:2rem">Entrar</h1>
+    <p class="muted">${c ? `Entre para continuar a compra de ${c.short}.` : 'Entre para ver a sua biblioteca.'}</p></div>
+    <div class="field"><label for="email">E-mail</label><input id="email" value="${STUDENT.email}" readonly></div>
+    <div class="field"><label for="senha">Senha</label><input id="senha" type="password" value="demonstracao" readonly></div>
+    <button class="btn block" data-act="login">Entrar com a conta de demonstração</button>
+    <p class="muted" style="font-size:.95rem">Nesta demonstração os campos já vêm preenchidos. Na versão final, o aluno cria a própria conta aqui e pode recuperar a senha por e-mail.</p>
+  </div></div></section>`;
+}
+
+function qrSVG(seed) {
+  const n = 25; let r = seed * 9301 + 49297, cells = '';
+  const finder = (x, y) => x < 7 && y < 7 ? (x === 0 || x === 6 || y === 0 || y === 6 || (x > 1 && x < 5 && y > 1 && y < 5)) : null;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    r = (r * 9301 + 49297) % 233280;
+    const f = finder(x, y) ?? finder(n - 1 - x, y) ?? finder(x, n - 1 - y);
+    const inQuiet = (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+    if (f === true || (f === null && !inQuiet && r / 233280 > .5)) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  }
+  return `<svg viewBox="0 0 ${n} ${n}" fill="currentColor" role="img" aria-label="Código Pix de exemplo, sem validade">${cells}</svg>`;
+}
+
+function viewPay(c) {
+  const pix = payMethod === 'pix';
+  return `<section class="section"><div class="wrap">
+    <ol class="progress"><li class="done">✓ Conta</li><li class="now">Pagamento</li><li>PDF liberado</li></ol>
+    <div class="pay">
+      <div class="panel">
+        <h1 style="font-size:1.8rem">Como você quer pagar?</h1>
+        <div class="seg"><button data-act="method" data-v="pix" aria-pressed="${pix}">Pix</button><button data-act="method" data-v="card" aria-pressed="${!pix}">Cartão de crédito</button></div>
+        ${pix ? `<div class="pix"><div class="qr">${qrSVG(c.price)}</div>
+          <div class="stack" style="gap:8px"><span class="status" id="pay-status">Aguardando pagamento</span>
+          <p>Abra o app do seu banco, escolha Pix e aponte a câmera para o código.</p>
+          <p class="muted" style="font-size:.95rem">Código de exemplo: não aceita pagamento.</p></div></div>`
+        : `<div class="stack" style="gap:8px"><span class="status" id="pay-status">Aguardando dados do cartão</span>
+          <div class="slot">O formulário seguro do cartão, com opção de parcelamento, aparece aqui na versão final.</div></div>`}
+        <button class="btn block" id="pay-btn" data-act="pay" data-v="${c.id}">${pix ? 'Simular Pix recebido' : 'Simular cartão aprovado'}</button>
+        <p class="muted" style="font-size:.95rem">O botão acima imita o aviso que o banco envia ao sistema. É esse aviso que libera o PDF, sem ninguém precisar conferir comprovante.</p>
+      </div>
+      <aside class="panel">
+        <h2 style="font-size:1.25rem">Resumo do pedido</h2>
+        <div class="line"><span>${c.title}</span></div>
+        <div class="line muted"><span>${c.pages} páginas · PDF</span></div>
+        <div class="line total"><span>Total</span><span>${brl(c.price)}</span></div>
+        <p class="muted" style="font-size:.95rem">Comprando como ${STUDENT.name}.</p>
+      </aside>
+    </div>
+  </div></section>`;
+}
+
+function viewLibrary() {
+  const mine = state.owned.map(byId).filter(Boolean);
+  const rest = COURSES.filter(c => !state.owned.includes(c.id));
+  return `<section class="section"><div class="wrap">
+    <div class="panel-head"><div><p class="eyebrow">Minha biblioteca</p><h1 style="font-size:clamp(1.9rem,4vw,2.6rem)">Olá, ${STUDENT.name.split(' ')[0]}</h1></div>
+      <button class="btn ghost" data-act="logout">Sair</button></div>
+    ${mine.length ? `<div class="lib">${mine.map(c => `<div class="lib-row ${fresh === c.id ? 'fresh' : ''}"><div class="mini" style="--cloth:${c.cloth}">${c.mono}</div>
+        <div><h3>${c.title}</h3><p class="muted">${c.pages} páginas · <span class="tag">Liberado</span></p></div>
+        <button class="btn" data-act="open" data-v="${c.id}">Baixar PDF</button></div>`).join('')}</div>`
+    : `<div class="panel empty"><h2 style="font-size:1.4rem">Sua biblioteca ainda está vazia</h2><p class="muted">Os cursos que você comprar aparecem aqui, prontos para baixar.</p><div><a class="btn" href="#cursos" data-go="cursos">Ver os cursos</a></div></div>`}
+    ${rest.length ? `<h2 style="margin:38px 0 16px;font-size:1.5rem">Continue estudando</h2>
+    <div class="lib">${rest.slice(0, 3).map(c => `<div class="lib-row"><div class="mini" style="--cloth:${c.cloth}">${c.mono}</div>
+        <div><h3>${c.title}</h3><p class="muted">Bloqueado até a compra · ${brl(c.price)}</p></div>
+        <a class="btn ghost" href="#c-${c.id}" data-go="c-${c.id}">Ver curso</a></div>`).join('')}</div>` : ''}
+  </div></section>`;
+}
+
+function viewPanel() {
+  const extra = state.sales.reduce((s, x) => s + x.value, 0), count = state.sales.length;
+  const sales = [...state.sales.map(s => ({ ...s, isNew: true })), ...EXAMPLE_SALES].slice(0, 7);
+  const rank = COURSES.map(c => ({ c, n: (EXAMPLE_RANK[c.id] || 0) + state.sales.filter(s => s.id === c.id).length })).sort((a, b) => b.n - a.n);
+  return `<section class="section"><div class="wrap">
+    <div class="panel-head"><div><p class="eyebrow">Painel do pastor · dados de exemplo</p><h1 style="font-size:clamp(1.9rem,4vw,2.6rem)">Como estão as vendas</h1></div>
+      <button class="btn" data-act="newcourse">Publicar novo curso</button></div>
+    <div class="stats">
+      <div class="stat"><b>${EXAMPLE_TOTALS.sales + count}</b><span class="muted">vendas no mês</span></div>
+      <div class="stat"><b>${brl(EXAMPLE_TOTALS.revenue + extra)}</b><span class="muted">recebidos no mês</span></div>
+      <div class="stat"><b>${EXAMPLE_TOTALS.students + (count ? 1 : 0)}</b><span class="muted">alunos cadastrados</span></div>
+      <div class="stat"><b>${EXAMPLE_TOTALS.downloads + count}</b><span class="muted">PDFs baixados</span></div>
+    </div>
+    <div class="dash">
+      <div class="panel"><h2 style="font-size:1.3rem">Últimas vendas</h2>
+        <div class="table-box"><table><thead><tr><th>Aluno</th><th>Curso</th><th>Quando</th><th class="num">Valor</th></tr></thead>
+        <tbody>${sales.map(s => `<tr class="${s.isNew ? 'fresh' : ''}"><td>${s.who}</td><td>${s.course}</td><td>${s.when}</td><td class="num">${brl(s.value)}</td></tr>`).join('')}</tbody></table></div>
+        ${count ? `<p class="muted" style="font-size:.95rem">A linha em destaque é a compra que você acabou de simular.</p>` : `<p class="muted" style="font-size:.95rem">Simule uma compra no site e ela aparece nesta lista.</p>`}
+      </div>
+      <div class="panel"><h2 style="font-size:1.3rem">Cursos mais vendidos</h2>
+        <ol class="rank">${rank.map(r => `<li><span>${r.c.short}</span><b style="font-variant-numeric:tabular-nums">${r.n}</b></li>`).join('')}</ol>
+      </div>
+    </div>
+  </div></section>`;
+}
+
+function render(scrollTo) {
+  shell();
+  const t = current;
+  let html;
+  if (t.startsWith('c-') && byId(t.slice(2))) html = viewCourse(byId(t.slice(2)));
+  else if (t.startsWith('pagar-') && byId(t.slice(6))) {
+    const id = t.slice(6);
+    if (!state.user) { state.pendingCourse = id; save(); current = 'entrar'; html = viewLogin(); }
+    else if (state.owned.includes(id)) { current = 'biblioteca'; html = viewLibrary(); }
+    else html = viewPay(byId(id));
+  }
+  else if (t === 'entrar') html = state.user ? viewLibrary() : viewLogin();
+  else if (t === 'biblioteca') { if (state.user) html = viewLibrary(); else { current = 'entrar'; html = viewLogin(); } }
+  else if (t === 'painel') html = viewPanel();
+  else html = viewHome();
+  $('app').innerHTML = html;
+  shell();
+  const target = scrollTo && $(scrollTo);
+  if (target) target.scrollIntoView(); else if (scrollTo !== false) window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+let current = 'inicio';
+function go(token) {
+  const anchor = token === 'cursos' || token === 'como';
+  current = anchor ? 'inicio' : token;
+  try { history.pushState(null, '', '#' + token); } catch (e) {}
+  render(anchor ? token : undefined);
+}
+function fromHash() {
+  const h = (location.hash || '').slice(1);
+  const anchor = h === 'cursos' || h === 'como';
+  current = anchor ? 'inicio' : (h || 'inicio');
+  render(anchor ? h : undefined);
+}
+window.addEventListener('popstate', fromHash);
+
+let toastTimer;
+function toast(msg) {
+  const el = $('toast'); el.textContent = msg; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 5000);
+}
+
+function openPdf(c) {
+  const mark = `${STUDENT.name} · CPF ${STUDENT.cpf}`;
+  $('pdf').innerHTML = `<div class="dlg">
+    <div class="dlg-top"><strong>Prévia do PDF liberado</strong><button class="linklike" data-act="close">Fechar</button></div>
+    <div class="pdf">
+      <div class="marks" aria-hidden="true">${Array(9).fill(`<span>${mark} &nbsp; ${mark}</span>`).join('')}</div>
+      <p class="eyebrow">Capítulo 1</p><h3>${c.toc[0][0]}</h3>
+      <p>Este é um exemplo de como cada página chega ao aluno. O texto real sai das apostilas que você já tem, sem precisar refazer nada.</p>
+      <p>Repare no nome e no CPF do comprador em marca d'água. O sistema grava esses dados em cada PDF no momento da compra, o que desestimula o compartilhamento do arquivo.</p>
+      <div class="pdf-foot"><span>${c.title}</span><span>Licenciado para ${STUDENT.name}</span></div>
+    </div>
+    <button class="btn block" data-act="fakedownload">Baixar PDF</button>
+  </div>`;
+  $('pdf').showModal();
+}
+
+document.addEventListener('click', e => {
+  const link = e.target.closest('[data-go]');
+  if (link) { e.preventDefault(); go(link.dataset.go); return; }
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const { act, v } = el.dataset;
+  if (act === 'filter') { filter = v; render(false); }
+  if (act === 'method') { payMethod = v; render(false); }
+  if (act === 'login') {
+    state.user = true; const next = state.pendingCourse; state.pendingCourse = null; save();
+    go(next ? 'pagar-' + next : 'biblioteca');
+  }
+  if (act === 'logout') { state.user = false; save(); go('inicio'); }
+  if (act === 'reset') { state = blank(); fresh = null; save(); go('inicio'); toast('Demonstração reiniciada.'); }
+  if (act === 'pay' && !paying) {
+    paying = true;
+    const c = byId(v), st = $('pay-status');
+    el.disabled = true; el.textContent = 'Aguardando a confirmação do banco…';
+    setTimeout(() => {
+      st.textContent = 'Pagamento confirmado'; st.classList.add('paid');
+      el.textContent = 'Liberando o PDF…';
+    }, 900);
+    setTimeout(() => {
+      paying = false;
+      state.owned.unshift(c.id);
+      state.sales.unshift({ id: c.id, who: STUDENT.name, course: c.short, when: 'Agora', value: c.price });
+      fresh = c.id; save(); go('biblioteca');
+      toast('Pagamento confirmado. Seu PDF já está liberado.');
+    }, 1900);
+  }
+  if (act === 'open') openPdf(byId(v));
+  if (act === 'close') $('pdf').close();
+  if (act === 'fakedownload') { $('pdf').close(); toast('Na versão final, este botão baixa o PDF com a marca d\'água do comprador.'); }
+  if (act === 'newcourse') toast('Na versão final, aqui o pastor envia o PDF, define título e preço e publica o curso.');
+});
+
+fromHash();
+</script>
+</body>
+</html>
